@@ -26,3 +26,8 @@ To start the flask server:<br/>
 `flask run`
 
 You should be able to go to `http://127.0.0.1:5000/` to see the front page of the blog.
+
+<br/>
+To run tests you need to install pytest and coverage within the venv:<br/>
+`pip install pytest coverage`
+`pytest`
