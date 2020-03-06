@@ -10,13 +10,43 @@ bp = Blueprint('blog', __name__)
 
 @bp.route('/')
 def index():
-    db = get_db()
-    posts = db.execute(
-        'SELECT p.id, title, body, created, author_id, username'
-        ' FROM post p JOIN user u ON p.author_id = u.id'
-        ' ORDER BY created DESC'
-    ).fetchall()
+    posts = get_all_posts()
     return render_template('blog/index.html', posts=posts)
+
+@bp.route('/<int:id>/like', methods=("GET",))
+def likePost(id):
+    db = get_db()
+    isLiked = is_liked(id)
+    post = get_post(id, check_author=False)
+    if(post['author_id'] != g.user['id']):
+        newLikes = ((post['likes']-1) if isLiked else (post['likes']+1))
+        db.execute(
+            'UPDATE post'
+            ' SET likes = ?'
+            ' WHERE id = ?',
+            (newLikes, id)
+        )
+
+        exists = like_exists(id)
+        if(exists):
+            liked = (0 if isLiked else 1)
+            db.execute(
+                'UPDATE likes'
+                ' SET liked = ?'
+                ' WHERE post_id = ? and liker_id = ?',
+                (liked, id, g.user['id'])
+            )
+        else:
+            db.execute(
+                'INSERT INTO likes (post_id, liker_id, liked)'
+                ' VALUES (?, ?, ?)',
+                (id, g.user['id'], 1)
+            )
+
+    db.commit()
+    posts = get_all_posts()
+
+    return render_template('blog/includes/indexPosts.html', posts=posts)
 
 
 @bp.route('/create', methods=('GET', 'POST'))
@@ -35,9 +65,9 @@ def create():
         else:
             db = get_db()
             db.execute(
-                'INSERT INTO post (title, body, author_id)'
-                ' VALUES (?, ?, ?)',
-                (title, body, g.user['id'])
+                'INSERT INTO post (title, body, author_id, likes)'
+                ' VALUES (?, ?, ?, ?)',
+                (title, body, g.user['id'], 0)
             )
             db.commit()
             return redirect(url_for('blog.index'))
@@ -89,9 +119,19 @@ def view_post(id):
     return render_template('blog/view.html', post=post)
 
 
+@bp.route('/reset', methods=('POST', 'GET'))
+def reset():
+    db = get_db()
+    db.execute('DELETE FROM likes')
+    db.execute('UPDATE post SET likes = 0')
+    db.commit()
+    posts = get_all_posts()
+    return render_template('blog/index.html', posts=posts)
+
+
 def get_post(id, check_author=True):
     post = get_db().execute(
-        'SELECT p.id, title, body, created, author_id, username'
+        'SELECT p.id, title, body, created, author_id, username, likes'
         ' FROM post p JOIN user u ON p.author_id = u.id'
         ' WHERE p.id = ?',
         (id,)
@@ -104,3 +144,42 @@ def get_post(id, check_author=True):
         abort(403)
 
     return post
+
+
+def get_all_posts():
+    db = get_db()
+    posts = db.execute(
+            'SELECT p.id, title, body, created, author_id, username, likes'
+            ' FROM post p JOIN user u ON p.author_id = u.id'
+            ' ORDER BY created DESC'
+        ).fetchall()
+
+    return posts
+
+
+def is_liked(id):
+    liked = get_db().execute(
+        'SELECT liked'
+        ' FROM likes'
+        ' WHERE post_id = ? and liker_id = ?',
+        (id, g.user['id'])
+    ).fetchone()
+
+    if liked is None:
+        return False
+
+    return (True if liked['liked'] == 1 else False)
+
+
+def like_exists(id):
+    liked = get_db().execute(
+        'SELECT liked'
+        ' FROM likes'
+        ' WHERE post_id = ? and liker_id = ?',
+        (id, g.user['id'])
+    ).fetchone()
+
+    if liked is None:
+        return False
+
+    return True

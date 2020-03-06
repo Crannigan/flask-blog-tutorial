@@ -132,3 +132,11 @@ input[type=submit] {
   align-self: start;
   min-width: 10em;
 }
+
+.post-body-row {
+  display: flex;
+}
+
+.like-count {
+  margin-left: auto;
+}
