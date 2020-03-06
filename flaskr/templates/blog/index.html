@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <h1>{% block title %}Posts{% endblock %}</h1>
+  <h1 class="posts-header">{% block title %}Posts{% endblock %}</h1>
   {% if g.user %}
     <a class="action" href="{{ url_for('blog.create') }}">New</a>
   {% endif %}
@@ -11,7 +11,23 @@
 {% block content %}
   <div class="blog-posts">
     {% for post in posts %}
-      {% include "blog/includes/indexPosts.html" ignore missing %}
+    <article class="post">
+      <header>
+          <div>
+              <h1><a class="post-title" href="{{ post['id'] }}">{{ post['title'] }}</a></h1>
+              <div class="about">by {{ post['username'] }} on {{ post['created'].strftime('%Y-%m-%d') }}</div>
+          </div>
+      </header>
+      <div class="post-body-row">
+          <div class="like-div" onClick="likePost({{ post['id'] }})">
+              <i class="far fa-thumbs-up"></i>
+              <p class="like-count like-post-{{ post['id'] }}"> {{ post['likes'] }}</p>
+          </div>
+          {% if g.user['id'] == post['author_id'] %}
+              <a class="action edit-button" href="{{ url_for('blog.update', id=post['id']) }}"><i class="fas fa-edit"></i> Edit</a>
+          {% endif %}
+      </div>
+    </article>
       {% if not loop.last %}
       <hr>
     {% endif %}

@@ -1,18 +1,18 @@
 html {
   font-family: sans-serif;
-  background: #eee;
+  background: black;
   padding: 1rem;
 }
 
 body {
   max-width: 960px;
   margin: 0 auto;
-  background: white;
+  background: #202020;
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: serif;
-  color: #377ba8;
+  color: #1e9ae0;
   margin: 1rem 0;
 }
 
@@ -135,8 +135,27 @@ input[type=submit] {
 
 .post-body-row {
   display: flex;
+  width: 50%;
+  border: solid yellow 1px;
+  padding-top: 15px;
 }
 
 .like-count {
-  margin-left: auto;
+  white-space: nowrap;
+  margin-left: 5px;
+  margin-top: 0px;
+}
+
+.like-div  {
+  cursor: pointer;
+  display: flex;
+}
+
+.edit-button  {
+  margin-left: 10px;
+}
+
+.post-title {
+  text-decoration: none;
+  color: #1e9ae0;
 }
