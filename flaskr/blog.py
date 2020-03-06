@@ -13,8 +13,12 @@ def index():
     posts = get_all_posts()
     return render_template('blog/index.html', posts=posts)
 
-@bp.route('/<int:id>/like', methods=("GET",))
-def likePost(id):
+@bp.route('/like', methods=("POST", "GET"))
+def likePost():
+    if(request.method == "GET"):
+        abort(404)
+
+    id = request.form['post_id']
     db = get_db()
     isLiked = is_liked(id)
     post = get_post(id, check_author=False)
@@ -44,9 +48,8 @@ def likePost(id):
             )
 
     db.commit()
-    posts = get_all_posts()
-
-    return render_template('blog/includes/indexPosts.html', posts=posts)
+    post = get_post(id, check_author=False)
+    return str(post['likes'])
 
 
 @bp.route('/create', methods=('GET', 'POST'))
