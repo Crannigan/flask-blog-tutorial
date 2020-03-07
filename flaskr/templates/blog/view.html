@@ -1,5 +1,26 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  {% include "blog/includes/indexPosts.html" ignore missing %}
+  <article class="blog">
+    <div>
+      <h1><a class="solo-post-title" href="{{ post['id'] }}">{{ post['title'] }}</a></h1>
+      <div class="solo-post-info-bar">
+        <div class="solo-post-about">by {{ post['username'] }} on {{ post['created'].strftime('%Y-%m-%d') }}</div>
+        <div class="solo-like-div" onClick="likePost({{ post['id'] }})">
+          <i class="far fa-thumbs-up"></i>
+          <p class="like-count like-post-{{ post['id'] }}"> {{ post['likes'] }}</p>
+        </div>
+        <div class="solo-comments-div">
+          <a class="action comments-button" href="#"><i class="fa fa-comments"></i> Comments</a>
+        </div>
+        {% if g.user['id'] == post['author_id'] %}
+          <a class="action edit-button" href="{{ url_for('blog.update', id=post['id']) }}"><i class="fas fa-edit"></i> Edit</a>
+        {% else %}
+          <a class="action save-button" href="#"><i class="fa fa-save"></i> Save</a>
+        {% endif %}
+      </div>
+    </div>
+    <i class="far fa-image post-image"></i>
+    <p class="solo-post-body">{{ post['body'] }}</p>
+  </article>
 {% endblock %}

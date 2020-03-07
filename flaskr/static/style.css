@@ -203,3 +203,41 @@ input[type=submit] {
 .update-title {
   color: #D7DADC;
 }
+
+.post-image {
+  float: right;
+  font-size: 20em;
+  margin: 30px;
+}
+
+.solo-post-title  {
+  font-size: 2em;
+  text-decoration: none;
+  color: #D7DADC;
+}
+
+.solo-post-about  {
+  color: #5C5C5C;
+  opacity: .5;
+}
+
+.solo-post-body {
+  white-space: pre-line;
+  text-align: justify;
+  color: #606060;
+}
+
+.solo-post-info-bar {
+  display: flex;
+}
+
+.solo-like-div  {
+  margin-left: 20px;
+  cursor: pointer;
+  display: flex;
+  color: #5C5C5C;
+}
+
+.solo-comments-div  {
+  margin-left: 20px;
+}
