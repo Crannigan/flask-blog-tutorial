@@ -4,7 +4,7 @@ function likePost(post_id) {
         type: "post", //request type,
         data: {post_id: post_id},
         success: function(response) {
-            $(".like-post-"+post_id).html((response !== '0' ? response : 'No') + ' Like' + (response !== '1' ? 's' : ''));
+            $(".like-post-"+post_id).html(response);
         },
     });
 }

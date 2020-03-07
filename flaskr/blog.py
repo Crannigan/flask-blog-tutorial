@@ -22,30 +22,29 @@ def likePost():
     db = get_db()
     isLiked = is_liked(id)
     post = get_post(id, check_author=False)
-    if(post['author_id'] != g.user['id']):
-        newLikes = ((post['likes']-1) if isLiked else (post['likes']+1))
-        db.execute(
-            'UPDATE post'
-            ' SET likes = ?'
-            ' WHERE id = ?',
-            (newLikes, id)
-        )
+    newLikes = ((post['likes']-1) if isLiked else (post['likes']+1))
+    db.execute(
+        'UPDATE post'
+        ' SET likes = ?'
+        ' WHERE id = ?',
+        (newLikes, id)
+    )
 
-        exists = like_exists(id)
-        if(exists):
-            liked = (0 if isLiked else 1)
-            db.execute(
-                'UPDATE likes'
-                ' SET liked = ?'
-                ' WHERE post_id = ? and liker_id = ?',
-                (liked, id, g.user['id'])
-            )
-        else:
-            db.execute(
-                'INSERT INTO likes (post_id, liker_id, liked)'
-                ' VALUES (?, ?, ?)',
-                (id, g.user['id'], 1)
-            )
+    exists = like_exists(id)
+    if(exists):
+        liked = (0 if isLiked else 1)
+        db.execute(
+            'UPDATE likes'
+            ' SET liked = ?'
+            ' WHERE post_id = ? and liker_id = ?',
+            (liked, id, g.user['id'])
+        )
+    else:
+        db.execute(
+            'INSERT INTO likes (post_id, liker_id, liked)'
+            ' VALUES (?, ?, ?)',
+            (id, g.user['id'], 1)
+        )
 
     db.commit()
     post = get_post(id, check_author=False)
@@ -100,7 +99,7 @@ def update(id):
                 (title, body, id)
             )
             db.commit()
-            return redirect(url_for('blog.index'))
+            return redirect(url_for('blog.view_post', id=id))
 
     return render_template('blog/update.html', post=post)
 
