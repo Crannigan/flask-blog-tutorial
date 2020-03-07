@@ -29,7 +29,12 @@
             </div>
             {% if g.user['id'] == post['author_id'] %}
                 <a class="action edit-button" href="{{ url_for('blog.update', id=post['id']) }}"><i class="fas fa-edit"></i> Edit</a>
+            {% else %}
+              <a class="action save-button" href="#"><i class="fa fa-save"></i> Save</a>
             {% endif %}
+            <div class="comments-div">
+              <a class="action comments-button" href="#"><i class="fa fa-comments"></i> Comments</a>
+            </div>
         </div>
       </div>
     </article>
