@@ -30,8 +30,10 @@
       <button class="comment-button" onclick="commentMade({{ post['id'] }})">Comment</button>
     </div>
     <div class="comments-body">
-      {% for cmnt in comments %}
-        <div>{{ cmnt['comment'] }}</div>
+      {% for iter in range(0,5) %}
+        <div class="comment-block comment-num{{ iter }}">
+          <div class="comment-text">{{ comments[iter]['comment'] }}</div>
+        </div>
       {% endfor %}
     </div>
   </article>

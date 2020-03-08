@@ -1,5 +1,5 @@
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, url_for
+    Blueprint, flash, g, redirect, render_template, request, url_for, jsonify
 )
 from werkzeug.exceptions import abort
 
@@ -62,6 +62,9 @@ def commentPost():
 
     id = request.form['post_id']
     db = get_db()
+
+    num_comments = get_num_comments(id)
+    start = (num_comments-5) if (num_comments > 4) else 0
     
     if(g.user is None):
         return str("No user")
@@ -72,7 +75,12 @@ def commentPost():
                 (g.user['id'], id, request.form['comment_body'])
             )
     db.commit()
-    return str("There is a user")
+
+    num_comments = get_num_comments(id)
+    start = (num_comments-5) if (num_comments > 4) else 0
+    comments = get_comments(id, start, 5)
+
+    return comments
 
 
 @bp.route('/create', methods=('GET', 'POST'))
@@ -140,13 +148,16 @@ def delete(id):
 
 @bp.route('/<int:id>', methods=('GET', 'POST'))
 def view_post(id):
-    if request.method == 'GET':
-        post = get_post(id, check_author=False)
-        comments = get_comments(id, 0, 5)
-        return render_template('blog/view.html', post=post, comments=comments)
+    if request.method == 'POST':
+        abort(404)
 
     post = get_post(id, check_author=False)
-    return render_template('blog/view.html', post=post)
+
+    num_comments = get_num_comments(id)
+    start = (num_comments-5) if (num_comments > 4) else 0
+    comments = get_comments(id, start, 5)
+
+    return render_template('blog/view.html', post=post, comments=comments)
 
 
 @bp.route('/reset', methods=('POST', 'GET'))
@@ -223,4 +234,28 @@ def get_comments(id, start, count):
         (id, start, count)
     ).fetchall()
 
-    return comments
+    commentDict = {}
+
+    for i in range(0, len(comments)):
+        temp = comments[len(comments) - i - 1]
+        infoDict = {
+            'comment_id': temp['comment_id'],
+            'author_id': temp['author_id'],
+            'post_id': temp['post_id'],
+            'created': temp['created'],
+            'comment': temp['comment']
+        }
+        commentDict[i] = infoDict
+
+    return commentDict
+
+
+def get_num_comments(id):
+    numComments = get_db().execute(
+        'SELECT count(*) as numComments'
+        ' FROM comments'
+        ' WHERE post_id = ?',
+        (id,)
+    ).fetchone()
+
+    return numComments['numComments']

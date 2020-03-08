@@ -12,15 +12,17 @@ function likePost(post_id) {
 
 function commentMade(post_id)  {
     var commentTXT = $('.new-comment-body').val();
-    // console.log(commentTXT);
-    // console.log(post_id);
     $.ajax({
-        url:"/comment", //the page containing python script
-        type: "post", //request type,
+        url:"/comment",
+        type: "post",
         data: {post_id: post_id, comment_body: commentTXT},
         success: function(response) {
             $(".new-comment-body").val('');
-            console.log(response);
+            let i = 0;
+            while(response[i] !== undefined || i < 5)  {
+                console.log(response[i]);
+                i++;
+            }
         },
     });
 }

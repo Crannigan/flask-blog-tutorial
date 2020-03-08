@@ -279,3 +279,13 @@ input[type=submit] {
   margin-left: auto;
   margin-right: 15px;
 }
+
+.comment-block  {
+  width: 80%;
+  min-height: 100px;
+  background-color: #181818;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 20px;
+}
