@@ -12,13 +12,14 @@ function likePost(post_id) {
 
 function commentMade(post_id)  {
     var commentTXT = $('.new-comment-body').val();
-    console.log(commentTXT);
-    console.log(post_id);
+    // console.log(commentTXT);
+    // console.log(post_id);
     $.ajax({
         url:"/comment", //the page containing python script
         type: "post", //request type,
-        data: {post_id: post_id},
+        data: {post_id: post_id, comment_body: commentTXT},
         success: function(response) {
+            $(".new-comment-body").val('');
             console.log(response);
         },
     });

@@ -66,7 +66,12 @@ def commentPost():
     if(g.user is None):
         return str("No user")
 
-
+    db.execute(
+                'INSERT INTO comments (author_id, post_id, comment)'
+                ' VALUES (?, ?, ?)',
+                (g.user['id'], id, request.form['comment_body'])
+            )
+    db.commit()
     return str("There is a user")
 
 
@@ -137,18 +142,17 @@ def delete(id):
 def view_post(id):
     if request.method == 'GET':
         post = get_post(id, check_author=False)
-        return render_template('blog/view.html', post=post)
+        comments = get_comments(id, 0, 5)
+        return render_template('blog/view.html', post=post, comments=comments)
 
     post = get_post(id, check_author=False)
     return render_template('blog/view.html', post=post)
-    
 
 
 @bp.route('/reset', methods=('POST', 'GET'))
 def reset():
     db = get_db()
-    db.execute('DELETE FROM likes')
-    db.execute('UPDATE post SET likes = 0')
+    db.execute('DELETE FROM comments')
     db.commit()
     posts = get_all_posts()
     return render_template('blog/index.html', posts=posts)
@@ -208,3 +212,15 @@ def like_exists(id):
         return False
 
     return True
+
+
+def get_comments(id, start, count):
+    comments = get_db().execute(
+        'SELECT comment_id, author_id, post_id, created, comment'
+        ' FROM comments'
+        ' WHERE post_id = ?'
+        ' LIMIT ?, ?',
+        (id, start, count)
+    ).fetchall()
+
+    return comments
