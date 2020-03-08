@@ -22,5 +22,15 @@
     </div>
     <i class="far fa-image post-image"></i>
     <p class="solo-post-body">{{ post['body'] }}</p>
+    <hr class="comments-post-divider">
+    <h1 class="comments-title">Comments</h1>
+
+    <textarea name="new-comment-body" class="new-comment-body"></textarea>
+    <div class="comment-controls-div">
+      <button class="comment-button" onclick="commentMade({{ post['id'] }})">Comment</button>
+    </div>
+    <div class="comments-body">
+
+    </div>
   </article>
 {% endblock %}

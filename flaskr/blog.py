@@ -20,8 +20,12 @@ def likePost():
 
     id = request.form['post_id']
     db = get_db()
-    isLiked = is_liked(id)
     post = get_post(id, check_author=False)
+
+    if(g.user is None):
+        return str(post['likes'])
+
+    isLiked = is_liked(id)
     newLikes = ((post['likes']-1) if isLiked else (post['likes']+1))
     db.execute(
         'UPDATE post'
@@ -49,6 +53,21 @@ def likePost():
     db.commit()
     post = get_post(id, check_author=False)
     return str(post['likes'])
+
+
+@bp.route('/comment', methods=('GET', 'POST'))
+def commentPost():
+    if(request.method == "GET"):
+        abort(404)
+
+    id = request.form['post_id']
+    db = get_db()
+    
+    if(g.user is None):
+        return str("No user")
+
+
+    return str("There is a user")
 
 
 @bp.route('/create', methods=('GET', 'POST'))
@@ -114,11 +133,15 @@ def delete(id):
     return redirect(url_for('blog.index'))
 
 
-@bp.route('/<int:id>', methods=('GET',))
-@login_required
+@bp.route('/<int:id>', methods=('GET', 'POST'))
 def view_post(id):
+    if request.method == 'GET':
+        post = get_post(id, check_author=False)
+        return render_template('blog/view.html', post=post)
+
     post = get_post(id, check_author=False)
     return render_template('blog/view.html', post=post)
+    
 
 
 @bp.route('/reset', methods=('POST', 'GET'))

@@ -241,3 +241,41 @@ input[type=submit] {
 .solo-comments-div  {
   margin-left: 20px;
 }
+
+.blog {
+  min-height: 500px;
+}
+
+.comments-post-divider  {
+  clear: both;
+}
+
+.new-comment-body {
+  width: 80%;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  border: 0px;
+}
+
+.comment-controls-div {
+  width: 80%;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: #181818;
+  height: 50px;
+  margin-top: -13px;
+  border: solid #181818 1px;
+  display: flex;
+  align-items: center;
+}
+
+.comments-title {
+  margin-left: 10%;
+}
+
+.comment-button {
+  margin-left: auto;
+  margin-right: 15px;
+}
