@@ -1,5 +1,5 @@
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, url_for, jsonify
+    Blueprint, flash, g, redirect, render_template, request, url_for
 )
 from werkzeug.exceptions import abort
 
@@ -157,7 +157,7 @@ def view_post(id):
     start = (num_comments-5) if (num_comments > 4) else 0
     comments = get_comments(id, start, 5)
 
-    return render_template('blog/view.html', post=post, comments=comments)
+    return render_template('blog/view.html', post=post, comments=comments, limit=len(comments))
 
 
 @bp.route('/reset', methods=('POST', 'GET'))

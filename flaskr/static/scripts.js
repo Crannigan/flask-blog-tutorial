@@ -20,7 +20,7 @@ function commentMade(post_id)  {
             $(".new-comment-body").val('');
             let i = 0;
             while(response[i] !== undefined || i < 5)  {
-                console.log(response[i]);
+                $(".comment-text-num"+i).html(response[i]['comment']);
                 i++;
             }
         },

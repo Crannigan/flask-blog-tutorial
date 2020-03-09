@@ -281,11 +281,53 @@ input[type=submit] {
 }
 
 .comment-block  {
-  width: 80%;
+  width: 76%;
   min-height: 100px;
   background-color: #181818;
   display: block;
   margin-left: auto;
   margin-right: auto;
   margin-top: 20px;
+  padding: 20px;
+  padding-bottom: 50px;
+  position: relative;
+}
+
+.comment-text {
+  color: #D7DADC;
+  padding: 20px;
+  min-height: 50px;
+  background-color: #202020;
+  margin-bottom: 10px;
+}
+
+.edit-comment-button  {
+  height: 40px;
+  width: 70px;
+  background-color: #363636;
+  text-align: center;
+  margin-right: 20px;
+  line-height: 40px;
+  border-radius: 15px;
+  color: #D7DADC;
+}
+
+.reply-comment-button {
+  height: 40px;
+  width: 70px;
+  background-color: #363636;
+  text-align: center;
+  margin-right: 20px;
+  line-height: 40px;
+  border-radius: 15px;
+  color: #D7DADC;
+}
+
+.comment-actions  {
+  height: fit-content;
+  display: flex;
+  justify-content: flex-end;
+  position: absolute;
+  bottom: 10px;
+  right: 0px;
 }

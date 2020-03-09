@@ -30,9 +30,15 @@
       <button class="comment-button" onclick="commentMade({{ post['id'] }})">Comment</button>
     </div>
     <div class="comments-body">
-      {% for iter in range(0,5) %}
+      {% for iter in range(0,limit) %}
         <div class="comment-block comment-num{{ iter }}">
-          <div class="comment-text">{{ comments[iter]['comment'] }}</div>
+          <div class="comment-text comment-text-num{{ iter }}">{{ comments[iter]['comment'] }}</div>
+          <div class="comment-actions">
+            {% if g.user['id'] == post['author_id'] %}
+              <div class="edit-comment-button">Edit</div>
+            {% endif %}
+            <div class="reply-comment-button">Reply</div>
+          </div>
         </div>
       {% endfor %}
     </div>
