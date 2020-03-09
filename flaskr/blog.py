@@ -243,7 +243,8 @@ def get_comments(id, start, count):
             'author_id': temp['author_id'],
             'post_id': temp['post_id'],
             'created': temp['created'],
-            'comment': temp['comment']
+            'comment': temp['comment'],
+            'is_owner': (temp['author_id'] == g.user['id'])
         }
         commentDict[i] = infoDict
 
