@@ -20,8 +20,12 @@ def likePost():
 
     id = request.form['post_id']
     db = get_db()
-    isLiked = is_liked(id)
     post = get_post(id, check_author=False)
+
+    if(g.user is None):
+        return str(post['likes'])
+
+    isLiked = is_liked(id)
     newLikes = ((post['likes']-1) if isLiked else (post['likes']+1))
     db.execute(
         'UPDATE post'
@@ -49,6 +53,34 @@ def likePost():
     db.commit()
     post = get_post(id, check_author=False)
     return str(post['likes'])
+
+
+@bp.route('/comment', methods=('GET', 'POST'))
+def commentPost():
+    if(request.method == "GET"):
+        abort(404)
+
+    id = request.form['post_id']
+    db = get_db()
+
+    num_comments = get_num_comments(id)
+    start = (num_comments-5) if (num_comments > 4) else 0
+    
+    if(g.user is None):
+        return str("No user")
+
+    db.execute(
+                'INSERT INTO comments (author_id, post_id, comment)'
+                ' VALUES (?, ?, ?)',
+                (g.user['id'], id, request.form['comment_body'])
+            )
+    db.commit()
+
+    num_comments = get_num_comments(id)
+    start = (num_comments-5) if (num_comments > 4) else 0
+    comments = get_comments(id, start, 5)
+
+    return comments
 
 
 @bp.route('/create', methods=('GET', 'POST'))
@@ -114,18 +146,24 @@ def delete(id):
     return redirect(url_for('blog.index'))
 
 
-@bp.route('/<int:id>', methods=('GET',))
-@login_required
+@bp.route('/<int:id>', methods=('GET', 'POST'))
 def view_post(id):
+    if request.method == 'POST':
+        abort(404)
+
     post = get_post(id, check_author=False)
-    return render_template('blog/view.html', post=post)
+
+    num_comments = get_num_comments(id)
+    start = (num_comments-5) if (num_comments > 4) else 0
+    comments = get_comments(id, start, 5)
+
+    return render_template('blog/view.html', post=post, comments=comments, limit=len(comments))
 
 
 @bp.route('/reset', methods=('POST', 'GET'))
 def reset():
     db = get_db()
-    db.execute('DELETE FROM likes')
-    db.execute('UPDATE post SET likes = 0')
+    db.execute('DELETE FROM comments')
     db.commit()
     posts = get_all_posts()
     return render_template('blog/index.html', posts=posts)
@@ -185,3 +223,40 @@ def like_exists(id):
         return False
 
     return True
+
+
+def get_comments(id, start, count):
+    comments = get_db().execute(
+        'SELECT comment_id, author_id, post_id, created, comment'
+        ' FROM comments'
+        ' WHERE post_id = ?'
+        ' LIMIT ?, ?',
+        (id, start, count)
+    ).fetchall()
+
+    commentDict = {}
+
+    for i in range(0, len(comments)):
+        temp = comments[len(comments) - i - 1]
+        infoDict = {
+            'comment_id': temp['comment_id'],
+            'author_id': temp['author_id'],
+            'post_id': temp['post_id'],
+            'created': temp['created'],
+            'comment': temp['comment'],
+            'is_owner': (temp['author_id'] == g.user['id'])
+        }
+        commentDict[i] = infoDict
+
+    return commentDict
+
+
+def get_num_comments(id):
+    numComments = get_db().execute(
+        'SELECT count(*) as numComments'
+        ' FROM comments'
+        ' WHERE post_id = ?',
+        (id,)
+    ).fetchone()
+
+    return numComments['numComments']
